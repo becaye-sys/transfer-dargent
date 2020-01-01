@@ -40,28 +40,28 @@ class UserController extends AbstractController
     /**
      * @Route("/", name="user_new", methods={"POST"})
      */
-    public function postUserAction(Request $request, ValidatorInterface $validator): Response
-    {
-        $user = new User();
-        $body = $request->getContent();
-        $data = json_decode($body, true);
-        $form = $this->createForm(UserType::class, $user);
-        $form->submit($data);
-       // $validator = $this->get('validator');
-        $errors = $validator->validate($user);
+//     public function postUserAction(Request $request, ValidatorInterface $validator): Response
+//     {
+//         $user = new User();
+//         $body = $request->getContent();
+//         $data = json_decode($body, true);
+//         $form = $this->createForm(UserType::class, $user);
+//         $form->submit($data);
+//        // $validator = $this->get('validator');
+//         $errors = $validator->validate($user);
 
-        if (count($errors) > 0) {
+//         if (count($errors) > 0) {
        
-            $errorsString = (string) $errors;
+//             $errorsString = (string) $errors;
     
-            return new JsonResponse($errorsString);
-        }
-        $entityManager = $this->getDoctrine()->getManager();
-        $entityManager->persist($user);
-        $entityManager->flush();
-        return $this->redirectToRoute('restaurant_index');
+//             return new JsonResponse($errorsString);
+//         }
+//         $entityManager = $this->getDoctrine()->getManager();
+//         $entityManager->persist($user);
+//         $entityManager->flush();
+//         return $this->redirectToRoute('user_index');
 
-}
+// }
 
  
 
