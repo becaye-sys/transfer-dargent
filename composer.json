@@ -6,6 +6,8 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "api-platform/api-pack": "^1.2",
+        "laminas/laminas-code": "^3.4",
+        "laminas/laminas-eventmanager": "^3.2",
         "lexik/jwt-authentication-bundle": "^2.6",
         "sensio/framework-extra-bundle": "^5.5",
         "symfony/console": "4.3.*",
@@ -21,6 +23,8 @@
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.3",
+        "phpunit/phpunit": "^8.5",
+        "symfony/debug-pack": "^1.0",
         "symfony/maker-bundle": "^1.14"
     },
     "config": {

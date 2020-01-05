@@ -2,29 +2,31 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\RoleRepository")
+ *@ApiResource()
  */
 class Role
 {
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255)
      */
     private $libelle;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\User", mappedBy="role")
+     * @ORM\OneToMany(targetEntity="App\Entity\User", mappedBy="owner")
      */
     private $users;
 
@@ -43,7 +45,7 @@ class Role
         return $this->libelle;
     }
 
-    public function setLibelle(?string $libelle): self
+    public function setLibelle(string $libelle): self
     {
         $this->libelle = $libelle;
 
@@ -62,7 +64,7 @@ class Role
     {
         if (!$this->users->contains($user)) {
             $this->users[] = $user;
-            $user->setRole($this);
+            $user->setOwner($this);
         }
 
         return $this;
@@ -73,16 +75,12 @@ class Role
         if ($this->users->contains($user)) {
             $this->users->removeElement($user);
             // set the owning side to null (unless already changed)
-            if ($user->getRole() === $this) {
-                $user->setRole(null);
+            if ($user->getOwner() === $this) {
+                $user->setOwner(null);
             }
         }
 
         return $this;
     }
-public function __toString()
-{
-    return $this->libelle;
-}
 
 }

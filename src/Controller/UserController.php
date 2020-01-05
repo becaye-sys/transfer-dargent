@@ -1,70 +1,57 @@
 <?php
+
 namespace App\Controller;
 
+use App\Entity\Role;
 use App\Entity\User;
-use App\Form\UserType;
-use App\Repository\UserRepository;
+use App\Repository\RoleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Serializer\SerializerInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
-
-      /**
-     * @Route("/user", name="index")
-     */
 class UserController extends AbstractController
 {
-      /**
-     * @Route("/", name="user_index", methods={"GET"})
-     */
- 
-    public function index(UserRepository $userRepository, SerializerInterface $serializer)
+    private $owner;
+    
+    private $repo;
+    public function __construct(RoleRepository $repo, $owner = null)
     {
-        $user = $userRepository->findAll();
-        $data = $serializer->serialize($user, 'json');
-
-        return new Response($data, 200, [
-            'Content-Type' => 'application/json'
-        ]);
+        
+        $this->repo = $repo;
+        $this->owner = $owner;
+        
     }
-
-
-
- 
-    /**
-     * @Route("/", name="user_new", methods={"POST"})
+      /**
+     * @Route("/register", name="register", methods={"POST"})
      */
-//     public function postUserAction(Request $request, ValidatorInterface $validator): Response
-//     {
-//         $user = new User();
-//         $body = $request->getContent();
-//         $data = json_decode($body, true);
-//         $form = $this->createForm(UserType::class, $user);
-//         $form->submit($data);
-//        // $validator = $this->get('validator');
-//         $errors = $validator->validate($user);
+    public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder, EntityManagerInterface $entityManager)
+    {
+        $role = $this->repo->findAll();
+        $values = json_decode($request->getContent());
+       // $valuees = json_encode($request->getContent());
+        if(isset($values->username,$values->password)) {
+            $user = new User();
+            $user->setUsername($values->username);
+            $user->setPassword($passwordEncoder->encodePassword($user, $values->password));
+            $user->setRoles($user->getRoles());
+            $user->setIsActive($values->isActive);
+            $entityManager->persist($user);
+            $entityManager->flush();
 
-//         if (count($errors) > 0) {
-       
-//             $errorsString = (string) $errors;
-    
-//             return new JsonResponse($errorsString);
-//         }
-//         $entityManager = $this->getDoctrine()->getManager();
-//         $entityManager->persist($user);
-//         $entityManager->flush();
-//         return $this->redirectToRoute('user_index');
+            $data = [
+                'status' => 201,
+                'message' => 'L\'utilisateur a été créé'
+            ];
 
-// }
-
- 
-
-    
-
+            return new JsonResponse($data, 201);
+        }
+        $data = [
+            'status' => 500,
+            'message' => 'Vous devez renseigner les clés username et password'
+        ];
+        return new JsonResponse($data, 500);
+    }
 }

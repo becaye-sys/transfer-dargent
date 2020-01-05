@@ -5,6 +5,8 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\SerializedName;
+use UserDataPersister;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
@@ -12,6 +14,27 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class User implements UserInterface
 {
+    /**
+     * @SerializedName("password")
+     */
+    private $plainPassword;
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
+    }
+    public function setPlainPassword(string $plainPassword): self
+    {
+        $this->plainPassword = $plainPassword;
+        return $this;
+    }
+
+    public function __construct($owner = null)
+    {    
+        $this->owner = $owner;
+    }
+
+  
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -36,17 +59,20 @@ class User implements UserInterface
     private $password;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Role", inversedBy="users")
-     */
-    private $role;
-
-    /**
-     * @ORM\Column(type="boolean",)
+     * @ORM\Column(type="boolean")
      */
     private $isActive;
-public function __construct() {
-$this->isActive = true;
-}
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Role", inversedBy="users")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $owner;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
     /**
      * A visual identifier that represents this user.
@@ -72,7 +98,8 @@ $this->isActive = true;
     {
         $roles = $this->roles;
         // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
+        
+      //  return json_decode($roles);
 
         return array_unique($roles);
     }
@@ -83,7 +110,7 @@ $this->isActive = true;
 
         return $this;
     }
-    
+
     /**
      * @see UserInterface
      */
@@ -95,7 +122,6 @@ $this->isActive = true;
     public function setPassword(string $password): self
     {
         $this->password = $password;
-        
 
         return $this;
     }
@@ -117,23 +143,6 @@ $this->isActive = true;
         // $this->plainPassword = null;
     }
 
-    public function getRole(): ?Role
-    {
-        return $this->role;
-    }
-
-    /**
-     * Set the value of roles
-     *
-     * @return  self
-     */ 
-    public function setRole(?Role $role): self
-    {
-        $this->role = $role;
-
-        return $this;
-    }
-
     public function getIsActive(): ?bool
     {
         return $this->isActive;
@@ -146,5 +155,15 @@ $this->isActive = true;
         return $this;
     }
 
-  
+    public function getOwner(): ?Role
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?Role $owner): self
+    {
+        $this->owner = $owner;
+
+        return $this;
+    }
 }
