@@ -28,9 +28,11 @@ class User implements UserInterface
         return $this;
     }
 
-    public function __construct($owner = null)
+    public function __construct($owner = null, $username)
     {    
         $this->owner = $owner;
+        $this->isActive = true;
+        $this->username = $username;
     }
 
   
@@ -59,9 +61,10 @@ class User implements UserInterface
     private $password;
 
     /**
-     * @ORM\Column(type="boolean")
+     *  @ORM\Column(name="is_active", type="boolean")
      */
     private $isActive;
+  
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Role", inversedBy="users")
