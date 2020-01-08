@@ -2,7 +2,10 @@ security:
     encoders:
         App\Entity\User:
             algorithm: auto
-
+    role_hierarchy:
+        ROLE_ADMIN_SYS: ROLE_ADMIN_SYS
+        ROLE_ADMIN: ROLE_ADMIN
+        ROLE_CAISSIER: ROLE_CAISSIER
     providers:
         entity_provider:
             entity:
