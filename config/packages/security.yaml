@@ -3,9 +3,9 @@ security:
         App\Entity\User:
             algorithm: auto
     role_hierarchy:
-        ROLE_ADMIN_SYS: ROLE_ADMIN_SYS
-        ROLE_ADMIN: ROLE_ADMIN
-        ROLE_CAISSIER: ROLE_CAISSIER
+        ROLE_ADMIN_SYS: ROLE_ADMIN
+        ROLE_ADMIN: ROLE_CAISSIER
+        ROLE_CAISSIER: ROLE_USER
     providers:
         entity_provider:
             entity:

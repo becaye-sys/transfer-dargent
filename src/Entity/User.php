@@ -14,11 +14,11 @@ use UserDataPersister;
  * attributes={"access_control"="is_granted('ROLE_ADMIN_SYS')", "access_control"="is_granted('ROLE_ADMIN')"},
  *     collectionOperations={
  *         "get",
- *         "post"={"access_control"="is_granted('ROLE_ADMIN_sys')", "access_control"="is_granted('ROLE_ADMIN')"}
+ *         "post"={"access_control"="is_granted('ROLE_ADMIN_SYS')", "access_control"="is_granted('ROLE_ADMIN')"}
  *     },
  *     itemOperations={
  *         "get",
- *         "put"={"access_control"="is_granted('ROLE_ADMIN_sys') or object.owner == user", "access_control"="is_granted('ROLE_ADMIN') or object.owner == user"},
+ *         "put"={"access_control"="is_granted('ROLE_ADMIN_SYS') or object.owner == user", "access_control"="is_granted('ROLE_ADMIN') or object.owner == user"},
  *     })
  */
 class User implements UserInterface

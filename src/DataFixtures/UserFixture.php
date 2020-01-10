@@ -1,24 +1,35 @@
 <?php
+
 namespace App\DataFixtures;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use App\Entity\User;
+
 use App\Entity\Role;
-use App\Repository\RoleRepository;
+use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManager;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+
 class UserFixture extends Fixture
 {
-    public function __construct()
+    private $encoder;
+    
+    public function __construct(UserPasswordEncoderInterface $encoder)
     {
-        
+        $this->encoder = $encoder;
     }
     public function load(ObjectManager $manager)
     {
-        $user = new User("admin");
-        $user->setPassword($this->encoder->encodePassword($user, "admin"));
-        $user->setRoles(json_encode(array("ROLE_ADMIN")));
-        $manager->persist($user);
+$role = new Role();
+$role->setLibelle("ADMIN_SYS");
+$manager->persist($role);
 
+$user = new User();
+$user->setUsername("supadmin");
+$user->setPassword($this->encoder->encodePassword($user, "system"));
+$user->setRoles(array("ROLE_".$role->getLibelle()));
+$user->setIsActive(true);
+$user->setOwner($role);
+
+$manager->persist($user);
         $manager->flush();
     }
 }

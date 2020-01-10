@@ -2,17 +2,20 @@
 namespace App\DataPersister;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use ApiPlatform\Core\DataPersister\DataPersisterInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class UserDataPersister implements DataPersisterInterface
 {
     private $entityManager;
     private $userPasswordEncoder;
-    public function __construct(EntityManagerInterface $entityManager, UserPasswordEncoderInterface $userPasswordEncoder)
+    public function __construct(EntityManagerInterface $entityManager, UserPasswordEncoderInterface $userPasswordEncoder, TokenStorageInterface $tokenStorage)
     {
         $this->entityManager = $entityManager;
         $this->userPasswordEncoder = $userPasswordEncoder;
+        $this->tokenStorage = $tokenStorage;
     }
 
     public function supports($data): bool
@@ -25,7 +28,16 @@ class UserDataPersister implements DataPersisterInterface
      */
     public function persist($data)
     {
-        if ($data->getPlainPassword()) {
+         //variable role user connecté
+         $userRoles=$this->tokenStorage->getToken()->getUser()->getRoles()[0];
+         //variable role user à modifié
+         $usersModi=$data->getRoles()[0];
+         if($userRoles=="ROLE_ADMIN_SYS"){
+             if($usersModi ==  "ROLE_ADMIN_SYS"){
+                 throw new HttpException("401","Acces non Autorisé");
+     
+             }
+        else {if ($data->getPlainPassword()) {
             $data->setPassword(
                 $this->userPasswordEncoder->encodePassword($data, $data->getPlainPassword())
             );
@@ -34,6 +46,19 @@ class UserDataPersister implements DataPersisterInterface
        $this->entityManager->persist($data);
         $this->entityManager->flush();
     }
+    }if($userRoles=="ROLE_ADMIN")
+    if($usersModi ==  "ROLE_ADMIN_SYS" || $usersModi ==  "ROLE_ADMIN" ){
+        throw new HttpException("401","Acces non Autorisé");
+
+    }else{
+        $data->setPassword($this->userPasswordEncoder->encodePassword($data, $data->getPassword()));
+        
+        $data->eraseCredentials();
+        
+        $this->entityManager->persist($data);
+        $this->entityManager->flush();
+    }
+}
     public function remove($data)
     {
         $this->entityManager->remove($data);
