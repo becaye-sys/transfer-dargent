@@ -2,56 +2,36 @@
 
 namespace App\Controller;
 
-use App\Entity\Role;
 use App\Entity\User;
-use App\Repository\RoleRepository;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Algorithm\Algorithm;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
-class UserController extends AbstractController
+
+class UserController 
 {
-    private $owner;
-    
-    private $repo;
-    public function __construct(RoleRepository $repo, $owner = null)
+   
+    public function __construct(TokenStorageInterface $tokenStorage,Algorithm $algo,UserPasswordEncoderInterface $userPasswordEncoder)
     {
-        
-        $this->repo = $repo;
-        $this->owner = $owner;
-        
+        $this->tokenStorage = $tokenStorage;
+        $this->algo=$algo;
+        $this->userPasswordEncoder = $userPasswordEncoder;
     }
-      /**
-     * @Route("/register", name="register", methods={"POST"})
-     */
-    public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder, EntityManagerInterface $entityManager)
+    public function __invoke(User $data)
     {
-        $role = $this->repo->findAll();
-        $values = json_decode($request->getContent());
-       // $valuees = json_encode($request->getContent());
-        if(isset($values->username,$values->password)) {
-            $user = new User();
-            $user->setUsername($values->username);
-            $user->setPassword($passwordEncoder->encodePassword($user, $values->password));
-            $user->setRoles($user->getRoles());
-            $user->setIsActive($values->isActive);
-            $entityManager->persist($user);
-            $entityManager->flush();
-
-            $data = [
-                'status' => 201,
-                'message' => 'L\'utilisateur a été créé'
-            ];
-
-            return new JsonResponse($data, 201);
+        
+        //variable role user connecté
+        $userRoles=$this->tokenStorage->getToken()->getUser()->getRoles()[0];
+       
+        //variable role user à modifier
+        $usersModi=$data->getRoles()[0];
+        if($this->algo->isAuthorised($userRoles,$usersModi) == true){
+            $data->setPassword($this->userPasswordEncoder->encodePassword($data, $data->getPassword()));
+            var_dump($data);
+            return $data;
+        }else{
+            throw new HttpException("401","Access non Authorisé");
         }
-        $data = [
-            'status' => 500,
-            'message' => 'Vous devez renseigner les clés username et password'
-        ];
-        return new JsonResponse($data, 500);
     }
 }

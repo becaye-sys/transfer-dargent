@@ -3,9 +3,9 @@ security:
         App\Entity\User:
             algorithm: auto
     role_hierarchy:
-        ROLE_ADMIN_SYS: ROLE_ADMIN
-        ROLE_ADMIN: ROLE_CAISSIER
-        ROLE_CAISSIER: ROLE_USER
+        ROLE_ADMIN:       ROLE_CAISSIER
+        ROLE_SUPER_ADMIN: ROLE_ADMIN
+        ROLE_CAISSIER:    ROLE_USER
     providers:
         entity_provider:
             entity:
@@ -31,7 +31,7 @@ security:
             anonymous: true
 
         api:
-            pattern:  ^/api
+            pattern:  ^/api_xxx
             stateless: true
             anonymous: false
             provider: entity_provider
@@ -40,7 +40,7 @@ security:
                     - lexik_jwt_authentication.jwt_token_authenticator
 
     access_control:
-        - { path: ^/login, roles: ROLE_ADMIN_SYS }
+        - { path: ^/login, roles: ROLE_SUPER_ADMIN }
         - { path: ^/login, roles: ROLE_ADMIN }
         - { path: ^/login, roles: ROLE_CAISSIER }
         - { path: ^/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }

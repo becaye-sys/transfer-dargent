@@ -18,18 +18,23 @@ class UserFixture extends Fixture
     }
     public function load(ObjectManager $manager)
     {
-$role = new Role();
-$role->setLibelle("ADMIN_SYS");
-$manager->persist($role);
 
-$user = new User();
-$user->setUsername("supadmin");
-$user->setPassword($this->encoder->encodePassword($user, "system"));
-$user->setRoles(array("ROLE_".$role->getLibelle()));
-$user->setIsActive(true);
-$user->setOwner($role);
+// $role = new Role("ROLE_SUPER_ADMIN");
+// //$role->setLibelle("ADMIN_SYS");
+// $manager->persist($role);
 
-$manager->persist($user);
-        $manager->flush();
+// $role1 = new Role("ROLE_ADMIN");
+// $manager->persist($role1);
+
+
+// $role2 = new Role("ROLE_CAISSIER");
+// $manager->persist($role2);
+
+// $user = new User("admin");
+// $user->setPassword($this->encoder->encodePassword($user, "admin"));
+// $user->setIsActive(true);
+// $user->setOwner($role);
+// $manager->persist($user);
+//         $manager->flush();
     }
 }

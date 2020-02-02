@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\RoleRepository")
@@ -22,6 +23,7 @@ class Role
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"post"})
      */
     private $libelle;
 
@@ -30,9 +32,10 @@ class Role
      */
     private $users;
 
-    public function __construct()
+    public function __construct($libelle)
     {
         $this->users = new ArrayCollection();
+        $this->libelle = $libelle;
     }
 
     public function getId(): ?int

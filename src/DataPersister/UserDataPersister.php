@@ -11,11 +11,11 @@ class UserDataPersister implements DataPersisterInterface
 {
     private $entityManager;
     private $userPasswordEncoder;
-    public function __construct(EntityManagerInterface $entityManager, UserPasswordEncoderInterface $userPasswordEncoder, TokenStorageInterface $tokenStorage)
+    public function __construct(EntityManagerInterface $entityManager, UserPasswordEncoderInterface $userPasswordEncoder)
     {
         $this->entityManager = $entityManager;
         $this->userPasswordEncoder = $userPasswordEncoder;
-        $this->tokenStorage = $tokenStorage;
+        
     }
 
     public function supports($data): bool
@@ -28,36 +28,14 @@ class UserDataPersister implements DataPersisterInterface
      */
     public function persist($data)
     {
-         //variable role user connecté
-         $userRoles=$this->tokenStorage->getToken()->getUser()->getRoles()[0];
-         //variable role user à modifié
-         $usersModi=$data->getRoles()[0];
-         if($userRoles=="ROLE_ADMIN_SYS"){
-             if($usersModi ==  "ROLE_ADMIN_SYS"){
-                 throw new HttpException("401","Acces non Autorisé");
-     
-             }
-        else {if ($data->getPlainPassword()) {
+        if ($data->getPlainPassword()) {
             $data->setPassword(
                 $this->userPasswordEncoder->encodePassword($data, $data->getPlainPassword())
             );
             $data->eraseCredentials();
         }
-       $this->entityManager->persist($data);
-        $this->entityManager->flush();
-    }
-    }if($userRoles=="ROLE_ADMIN")
-    if($usersModi ==  "ROLE_ADMIN_SYS" || $usersModi ==  "ROLE_ADMIN" ){
-        throw new HttpException("401","Acces non Autorisé");
-
-    }else{
-        $data->setPassword($this->userPasswordEncoder->encodePassword($data, $data->getPassword()));
-        
-        $data->eraseCredentials();
-        
         $this->entityManager->persist($data);
         $this->entityManager->flush();
-    }
 }
     public function remove($data)
     {

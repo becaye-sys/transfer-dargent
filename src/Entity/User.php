@@ -2,27 +2,73 @@
 
 namespace App\Entity;
 
+use Serializable;
 use Doctrine\ORM\Mapping as ORM;
+use App\Controller\UserController;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\SerializedName;
-use UserDataPersister;
+use Symfony\Component\Security\Core\User\AdvancedUserInterface;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
- * @ApiResource(   
- * attributes={"access_control"="is_granted('ROLE_ADMIN_SYS')", "access_control"="is_granted('ROLE_ADMIN')"},
- *     collectionOperations={
- *         "get",
- *         "post"={"access_control"="is_granted('ROLE_ADMIN_SYS')", "access_control"="is_granted('ROLE_ADMIN')"}
+* @ApiResource(
+ * collectionOperations={
+ *         "get"={
+ *          "normalization_context"={"groups"={"get"}},},
+ *         "post"={"security"="is_granted(['ROLE_SUPER_ADMIN','ROLE_ADMIN'])", "security_message"="Seul SUPER_ADMIN peut creer un user",
+ * "controller"=UserController::class}
  *     },
- *     itemOperations={
- *         "get",
- *         "put"={"access_control"="is_granted('ROLE_ADMIN_SYS') or object.owner == user", "access_control"="is_granted('ROLE_ADMIN') or object.owner == user"},
- *     })
+ * itemOperations={
+ *     "get"={
+ *          "normalization_context"={"groups"={"get"}},
+ * "security"="is_granted('ROLE_SUPER_ADMIN')"},
+ *      "put"={"security"="is_granted(['ROLE_SUPER_ADMIN','ROLE_ADMIN'])", "security_message"="Seul SUPER_ADMIN peut bloquer un user"}
+ * }
+ *    
+ *     )
  */
-class User implements UserInterface
+class User implements AdvancedUserInterface, \Serializable
 {
+
+    // public function __construct($name)
+    // {
+        
+    //     $this->username = $name;
+    // }
+
+    /**
+     * @ORM\Id()
+     * @ORM\GeneratedValue()
+     * @ORM\Column(type="integer")
+     */
+    private $id;
+
+    /**
+     * @ORM\Column(type="string", length=180, unique=true)
+     * @Groups({"get", "post"})
+     */
+    private $username;
+
+    /**
+     * @var string The hashed password
+     * @ORM\Column(type="string")
+     * @Groups({"post"})
+     */
+    private $password;
+
+    /**
+    * @ORM\Column(name="is_active", type="boolean")
+     */
+    private $isActive;
+    
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Role", inversedBy="users")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $owner;
     /**
      * @SerializedName("password")
      */
@@ -36,51 +82,6 @@ class User implements UserInterface
         $this->plainPassword = $plainPassword;
         return $this;
     }
-
-    public function __construct($owner = null, $username)
-    {    
-        $this->owner = $owner;
-        $this->isActive = true;
-        $this->username = $username;
-    }
-
-  
-
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     */
-    private $id;
-
-    /**
-     * @ORM\Column(type="string", length=180, unique=true)
-     */
-    private $username;
-
-    /**
-     * @ORM\Column(type="json")
-     */
-    private $roles = [];
-
-    /**
-     * @var string The hashed password
-     * @ORM\Column(type="string")
-     */
-    private $password;
-
-    /**
-     *  @ORM\Column(name="is_active", type="boolean")
-     */
-    private $isActive;
-  
-
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Role", inversedBy="users")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $owner;
-
     public function getId(): ?int
     {
         return $this->id;
@@ -108,19 +109,12 @@ class User implements UserInterface
      */
     public function getRoles(): array
     {
-        $roles = $this->roles;
+        $roles = $this->owner->getLibelle();
         // guarantee every user at least has ROLE_USER
         
       //  return json_decode($roles);
 
-        return array_unique($roles);
-    }
-
-    public function setRoles(array $roles): self
-    {
-        $this->roles = $roles;
-
-        return $this;
+        return array($roles);
     }
 
     /**
@@ -177,5 +171,41 @@ class User implements UserInterface
         $this->owner = $owner;
 
         return $this;
+    }
+
+
+    public function isAccountNonExpired()
+    {
+        return true;
+    }
+
+    public function isAccountNonLocked()
+    {
+        return true;
+    }
+
+    public function isCredentialsNonExpired()
+    {
+        return true;
+    }
+
+    public function isEnabled()
+    {
+        return $this->isActive;
+    }
+
+    public function serialize()
+    {
+        return serialize(array(
+            // ...
+            $this->isActive
+        ));
+    }
+    public function unserialize($serialized)
+    {
+        list (
+            // ...
+            $this->isActive
+        ) = unserialize($serialized);
     }
 }
