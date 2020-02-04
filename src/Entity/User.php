@@ -18,14 +18,14 @@ use Symfony\Component\Security\Core\User\AdvancedUserInterface;
  * collectionOperations={
  *         "get"={
  *          "normalization_context"={"groups"={"get"}},},
- *         "post"={"security"="is_granted(['ROLE_SUPER_ADMIN','ROLE_ADMIN'])", "security_message"="Seul SUPER_ADMIN peut creer un user",
+ *         "post"={"security"="is_granted(['ROLE_SUPER_ADMIN','ROLE_ADMIN'])", "security_message"="Vous N'avez pas L'autorisation pour cree ce type de User",
  * "controller"=UserController::class}
  *     },
  * itemOperations={
  *     "get"={
  *          "normalization_context"={"groups"={"get"}},
  * "security"="is_granted('ROLE_SUPER_ADMIN')"},
- *      "put"={"security"="is_granted(['ROLE_SUPER_ADMIN','ROLE_ADMIN'])", "security_message"="Seul SUPER_ADMIN peut bloquer un user"}
+ *      "put"={"security"="is_granted(['ROLE_SUPER_ADMIN','ROLE_ADMIN'])", "security_message"="Vous N'avez pas L'autorisation pour cree ce type de User"}
  * }
  *    
  *     )
