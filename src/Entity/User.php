@@ -3,10 +3,13 @@
 namespace App\Entity;
 
 use Serializable;
+use App\Entity\Role;
 use Doctrine\ORM\Mapping as ORM;
 use App\Controller\UserController;
+use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiSubresource;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\SerializedName;
@@ -19,13 +22,15 @@ use Symfony\Component\Security\Core\User\AdvancedUserInterface;
  *         "get"={
  *          "normalization_context"={"groups"={"get"}},},
  *         "post"={"security"="is_granted(['ROLE_SUPER_ADMIN','ROLE_ADMIN'])", "security_message"="Vous N'avez pas L'autorisation pour cree ce type de User",
- * "controller"=UserController::class}
+ * "controller"=UserController::class,
+*"denormalizationContext"={"groups"={"post"}}}
  *     },
  * itemOperations={
  *     "get"={
  *          "normalization_context"={"groups"={"get"}},
  * "security"="is_granted('ROLE_SUPER_ADMIN')"},
- *      "put"={"security"="is_granted(['ROLE_SUPER_ADMIN','ROLE_ADMIN'])", "security_message"="Vous N'avez pas L'autorisation pour cree ce type de User"}
+ *      "put"={"security"="is_granted(['ROLE_SUPER_ADMIN','ROLE_ADMIN'])", "security_message"="Vous N'avez pas L'autorisation pour cree ce type de User",
+*"denormalizationContext"={"groups"={"post"}}}
  * }
  *    
  *     )
@@ -54,25 +59,49 @@ class User implements AdvancedUserInterface, \Serializable
 
     /**
      * @var string The hashed password
-     * @ORM\Column(type="string")
-     * @Groups({"post"})
+     * @ORM\Column(type="string", length=255)
+      * @Groups({"get", "post"})
      */
     private $password;
 
     /**
     * @ORM\Column(name="is_active", type="boolean")
+    * @Groups({"get", "post"})
      */
     private $isActive;
     
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Role", inversedBy="users")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"get", "post"})
      */
     private $owner;
     /**
      * @SerializedName("password")
      */
+
     private $plainPassword;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Partenaire", inversedBy="users")
+     */
+    private $partenaire;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Compte", mappedBy="user")
+     */
+    private $compte;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Depot", mappedBy="user")
+     */
+    private $depot;
+
+    public function __construct()
+    {
+        $this->compte = new ArrayCollection();
+        $this->depot = new ArrayCollection();
+    }
     public function getPlainPassword(): ?string
     {
         return $this->plainPassword;
@@ -116,6 +145,14 @@ class User implements AdvancedUserInterface, \Serializable
 
         return array($roles);
     }
+
+    public function setRole(?Role $owner)
+    {
+        $this->owner = $owner;
+
+        return $this;
+    }
+
 
     /**
      * @see UserInterface
@@ -207,5 +244,79 @@ class User implements AdvancedUserInterface, \Serializable
             // ...
             $this->isActive
         ) = unserialize($serialized);
+    }
+
+    public function getPartenaire(): ?Partenaire
+    {
+        return $this->partenaire;
+    }
+
+    public function setPartenaire(?Partenaire $partenaire): self
+    {
+        $this->partenaire = $partenaire;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Compte[]
+     */
+    public function getCompte(): Collection
+    {
+        return $this->compte;
+    }
+
+    public function addCompte(Compte $compte): self
+    {
+        if (!$this->compte->contains($compte)) {
+            $this->compte[] = $compte;
+            $compte->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCompte(Compte $compte): self
+    {
+        if ($this->compte->contains($compte)) {
+            $this->compte->removeElement($compte);
+            // set the owning side to null (unless already changed)
+            if ($compte->getUser() === $this) {
+                $compte->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Depot[]
+     */
+    public function getDepot(): Collection
+    {
+        return $this->depot;
+    }
+
+    public function addDepot(Depot $depot): self
+    {
+        if (!$this->depot->contains($depot)) {
+            $this->depot[] = $depot;
+            $depot->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDepot(Depot $depot): self
+    {
+        if ($this->depot->contains($depot)) {
+            $this->depot->removeElement($depot);
+            // set the owning side to null (unless already changed)
+            if ($depot->getUser() === $this) {
+                $depot->setUser(null);
+            }
+        }
+
+        return $this;
     }
 }
