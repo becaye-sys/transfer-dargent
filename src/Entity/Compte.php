@@ -12,17 +12,20 @@ use App\Controller\CompteController;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\CompteRepository")
  *@ApiResource(
+ *    normalizationContext={"groups"={"get"}},
+ * denormalizationContext={"groups"={"post"}},
  * collectionOperations={
- *         "get"={
- *          "normalization_context"={"groups"={"get"}}},
- *         "post"={"controller"=CompteController::class,
-  *   "denormalizationContext"={"groups"={"post"}}}
+ *         "get"
+ *          ,
+ *         "post"={"security"="is_granted(['ROLE_SUPER_ADMIN','ROLE_ADMIN'])", "security_message"="Vous N'avez pas L'autorisation pour cree un Compte",
+ * "controller"=CompteController::class
+  *   }
  *     },
  * itemOperations={
  *     "get"={"normalization_context"={"groups"={"get"}}},
- *      "put"={"denormalizationContext"={"groups"={"post"}}}
+ *      "put"={"security"="is_granted(['ROLE_SUPER_ADMIN','ROLE_ADMIN'])", "security_message"="Vous N'avez pas L'autorisation pour cree un Compte",
+ * "denormalizationContext"={"groups"={"post"}}}
  * }
- *    
  *     )
  */
 class Compte

@@ -20,7 +20,7 @@ use Symfony\Component\Security\Core\User\AdvancedUserInterface;
 * @ApiResource(
  * collectionOperations={
  *         "get"={
- *          "normalization_context"={"groups"={"get"}},},
+ *          "normalization_context"={"groups"={"get"}}},
  *         "post"={"security"="is_granted(['ROLE_SUPER_ADMIN','ROLE_ADMIN'])", "security_message"="Vous N'avez pas L'autorisation pour cree ce type de User",
  * "controller"=UserController::class,
 *"denormalizationContext"={"groups"={"post"}}}

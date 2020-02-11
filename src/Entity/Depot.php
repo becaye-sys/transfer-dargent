@@ -3,10 +3,15 @@
 namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
+use App\Controller\DepotController;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\DepotRepository")
+ * @ApiResource(
+*collectionOperations={
+ *         "post"={"controller"=DepotController::class}
+ *     } )
  */
 class Depot
 {

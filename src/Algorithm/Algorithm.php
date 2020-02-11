@@ -28,14 +28,14 @@ class Algorithm{
     }
 
 
-    // public function validMontant($m){
+    public function validMontant($m){
         
-    //     if($m>=500000){
-    //         return true;
-    //     }else{
-    //         return false;
-    //     }
-    // }
+        if($m>=500000){
+            return true;
+        }else{
+            return false;
+        }
+    }
     // public function isImage($file)
     // {
     //     $extension=$file->guessExtension();
@@ -46,8 +46,8 @@ class Algorithm{
     //         return false;
     //     }
     // }
-    // public function genereNum($date,$id){
-    //     return   date_format($date,"Ymd").$id;
+    public function genereNum($date,$id){
+        return   date_format($date,"Ymd").$id;
 
-    // }
+    }
 }
