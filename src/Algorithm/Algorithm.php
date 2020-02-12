@@ -1,9 +1,6 @@
 <?php
 namespace App\Algorithm;
 
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class Algorithm{
 
@@ -30,7 +27,7 @@ class Algorithm{
 
     public function validMontant($m){
         
-        if($m>=500000){
+        if($m >= 500000){
             return true;
         }else{
             return false;
