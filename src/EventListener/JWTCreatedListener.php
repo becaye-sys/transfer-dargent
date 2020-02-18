@@ -22,11 +22,11 @@ class JWTCreatedListener
     public function onJWTCreated(JWTCreatedEvent $event)
     {
         
-        dd($event);
+        //dd($event);
         /** @var $user \AppBundle\Entity\User */
 
         $user = $event->getUser();
-        dd($user);
+        //dd($user);
         if(!$user->getIsActive())
         {
             throw new Exception('Vous etes bloqué');
