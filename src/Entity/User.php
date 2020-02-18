@@ -5,6 +5,7 @@ namespace App\Entity;
 use Serializable;
 use App\Entity\Role;
 use Doctrine\ORM\Mapping as ORM;
+use App\Controller\PickController;
 use App\Controller\UserController;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -26,12 +27,37 @@ use Symfony\Component\Security\Core\User\AdvancedUserInterface;
 *"denormalizationContext"={"groups"={"post"}}}
  *     },
  * itemOperations={
- *     "get"={
- *          "normalization_context"={"groups"={"get"}},
- * "security"="is_granted('ROLE_SUPER_ADMIN')"},
- *      "put"={"security"="is_granted(['ROLE_SUPER_ADMIN','ROLE_ADMIN'])", "security_message"="Vous N'avez pas L'autorisation pour cree ce type de User",
-*"denormalizationContext"={"groups"={"post"}}}
- * }
+ *    "get",
+ *         "put"={
+ * "method"="put",
+ * "normalization_context"={"groups"={"get"}},
+ * },
+ *         "put_image"={
+ * * "method"="put",
+ *         "path"="/users/{id}/image",
+ *             "controller"=PickController::class,
+ *             "deserialize"=false,
+ *             "openapi_context"={
+ *                 "requestBody"={
+ *                     "content"={
+ *                         "multipart/form-data"={
+ *                             "schema"={
+ *                                 "type"="object",
+ *                                 "properties"={
+ *                                     "file"={
+ *                                         "type"="string",
+ *                                         "format"="binary"
+ *                                     }
+ *                                 }
+ *                             }
+ *                         }
+ *                     }
+ *                 }
+ *             }
+ *         },
+ *  
+ *             
+ *     },
  *    
  *     )
  */
@@ -96,6 +122,11 @@ class User implements AdvancedUserInterface, \Serializable
      * @ORM\OneToMany(targetEntity="App\Entity\Depot", mappedBy="user")
      */
     private $depot;
+    /**
+* @ORM\Column(type="blob", nullable=true)
+    */
+    private $image;
+                                                
 
     public function __construct()
     {
@@ -209,6 +240,22 @@ class User implements AdvancedUserInterface, \Serializable
 
         return $this;
     }
+
+
+
+    public function getImage()
+    {
+        return $this->image;
+    }
+
+    public function setImage($image): self
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+
+
 
 
     public function isAccountNonExpired()

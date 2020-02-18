@@ -3,15 +3,24 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Core\Annotation\ApiFilter;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\PartenaireRepository")
- * @ApiResource()
+ * @ApiResource(
+ * collectionOperations={
+ * },
+ * itemOperations={
+ * "get"
+ * }
+ * )
+ * @ApiFilter(SearchFilter::class, properties={"ninea": "exact"})
  */
 class Partenaire
 {

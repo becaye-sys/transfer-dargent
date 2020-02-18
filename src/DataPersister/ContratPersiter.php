@@ -2,19 +2,11 @@
 namespace App\DataPersister;
 
 use DateTime;
-use App\Entity\Users;
 use App\Entity\Compte;
-use App\Entity\Comptes;
 use App\Entity\Contrat;
-use App\Entity\Contrats;
-use App\Algorithm\Algorithm;
-use App\Entity\Transactions;
 use App\Repository\TermesRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use ApiPlatform\Core\DataPersister\DataPersisterInterface;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 
