@@ -42,10 +42,10 @@ class CompteController
         $id=$use->getLast()[0]->getId()+1;
        if($iduser == null)
        {
-        if ($user->getPlainPassword()) 
+        if ($user->getPassword()) 
         {
             $user->setPassword(
-                $this->userPasswordEncoder->encodePassword($user, $user->getPlainPassword())
+                $this->userPasswordEncoder->encodePassword($user, $user->getPassword())
                 
             );
         }

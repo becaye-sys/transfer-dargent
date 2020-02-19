@@ -9,9 +9,20 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\DepotRepository")
  * @ApiResource(
-*collectionOperations={
- *         "post"={"controller"=DepotController::class}
- *     } )
+ * collectionOperations={
+ *         "get"
+ *          ,
+ *         "post"={"security"="is_granted(['ROLE_SUPER_ADMIN','ROLE_ADMIN','ROLE_CAISSIER'])", "security_message"="Vous N'avez pas L'autorisation pour faire des Depots",
+ * "controller"=DepotController::class
+  *   }
+ *     },
+ * itemOperations={
+ *     "get",
+ *      "put"={"security"="is_granted(['ROLE_SUPER_ADMIN','ROLE_ADMIN','ROLE_CAISSIER'])", "security_message"="Vous N'avez pas L'autorisation pour faire des Depots"
+ * ,
+ * "controller"=DepotController::class
+ * }
+ * } )
  */
 class Depot
 {

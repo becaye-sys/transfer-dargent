@@ -1,13 +1,16 @@
 <?php
 namespace App\EventListener;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Config\Definition\Exception\Exception;
 use Lexik\Bundle\JWTAuthenticationBundle\Event\JWTCreatedEvent;
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 
 
 
 class JWTCreatedListener
+
 {
+
+private $requestStack;
     public function __construct(RequestStack $requestStack)
     {
         $this->requestStack = $requestStack;
@@ -29,8 +32,9 @@ class JWTCreatedListener
         //dd($user);
         if(!$user->getIsActive())
         {
-            throw new Exception('Vous etes bloqué');
-
+            
+            throw new CustomUserMessageAuthenticationException('Vous etes bloque');
         }
     }
+    
 }

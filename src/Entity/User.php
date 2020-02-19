@@ -1,8 +1,6 @@
 <?php
 
 namespace App\Entity;
-
-use Serializable;
 use App\Entity\Role;
 use Doctrine\ORM\Mapping as ORM;
 use App\Controller\PickController;
@@ -22,13 +20,14 @@ use Symfony\Component\Security\Core\User\AdvancedUserInterface;
  * collectionOperations={
  *         "get"={
  *          "normalization_context"={"groups"={"get"}}},
- *         "post"={"security"="is_granted(['ROLE_SUPER_ADMIN','ROLE_ADMIN'])", "security_message"="Vous N'avez pas L'autorisation pour cree ce type de User",
+ *         "post"={"security"="is_granted(['ROLE_SUPER_ADMIN','ROLE_ADMIN','ROLE_PARTENAIRE','ROLE_ADMIN_PART'])", "security_message"="Vous N'avez pas L'autorisation pour cree ce type de User",
  * "controller"=UserController::class,
 *"denormalizationContext"={"groups"={"post"}}}
  *     },
  * itemOperations={
  *    "get",
  *         "put"={
+ * "security"="is_granted(['ROLE_SUPER_ADMIN','ROLE_ADMIN','ROLE_PARTENAIRE','ROLE_ADMIN_PART'])", "security_message"="Vous N'avez pas L'autorisation pour cree ce type de User",
  * "method"="put",
  * "normalization_context"={"groups"={"get"}},
  * },
@@ -61,13 +60,13 @@ use Symfony\Component\Security\Core\User\AdvancedUserInterface;
  *    
  *     )
  */
-class User implements AdvancedUserInterface, \Serializable
+class User implements UserInterface
 {
 
-    // public function __construct($name)
+    // public function __construct($isActive)
     // {
         
-    //     $this->username = $name;
+    //     $this->isActive = true;
     // }
 
     /**
@@ -132,6 +131,7 @@ class User implements AdvancedUserInterface, \Serializable
     {
         $this->compte = new ArrayCollection();
         $this->depot = new ArrayCollection();
+        $this->isActive = true;
     }
     public function getPlainPassword(): ?string
     {
@@ -253,44 +253,6 @@ class User implements AdvancedUserInterface, \Serializable
         $this->image = $image;
 
         return $this;
-    }
-
-
-
-
-    public function isAccountNonExpired()
-    {
-        return true;
-    }
-
-    public function isAccountNonLocked()
-    {
-        return true;
-    }
-
-    public function isCredentialsNonExpired()
-    {
-        return true;
-    }
-
-    public function isEnabled()
-    {
-        return $this->isActive;
-    }
-
-    public function serialize()
-    {
-        return serialize(array(
-            // ...
-            $this->isActive
-        ));
-    }
-    public function unserialize($serialized)
-    {
-        list (
-            // ...
-            $this->isActive
-        ) = unserialize($serialized);
     }
 
     public function getPartenaire(): ?Partenaire

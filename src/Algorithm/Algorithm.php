@@ -22,7 +22,29 @@ class Algorithm{
                 return true;
             }
         }
+            if($userRoles=="ROLE_PARTENAIRE"){  
+                if($usersModi ==  "ROLE_SUPER_ADMIN" || $usersModi ==  "ROLE_ADMIN" || $usersModi ==  "ROLE_CAISSIER" || $usersModi ==  "ROLE_PARTENAIRE"){
+                    return false;
+    
+                }else{
+                    return true;
+                }
+        }
+
+        if($userRoles=="ROLE_ADMIN_PART"){  
+            if($usersModi ==  "ROLE_SUPER_ADMIN" || $usersModi ==  "ROLE_ADMIN" || $usersModi ==  "ROLE_CAISSIER" || $usersModi ==  "ROLE_PARTENAIRE" || $usersModi ==  "ROLE_ADMIN_PART" ){
+                return false;
+
+            }else{
+                return true;
+            }
     }
+
+
+
+    }
+
+    
 
 
     public function validMontant($m){

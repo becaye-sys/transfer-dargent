@@ -26,6 +26,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
  * itemOperations={
  *     "get"={"normalization_context"={"groups"={"get"}}},
  *      "put"={"security"="is_granted(['ROLE_SUPER_ADMIN','ROLE_ADMIN'])", "security_message"="Vous N'avez pas L'autorisation pour cree un Compte",
+ * "controller"=CompteController::class,
  * "denormalizationContext"={"groups"={"post"}}}
  * }
  *     )
