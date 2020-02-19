@@ -29,7 +29,7 @@ class ContratPersiter implements DataPersisterInterface
     }
     public function persist($data)
     {
-        
+        $v=2;
         if($data->getPartenaire()->getId() == null){
             $v=1;
         }

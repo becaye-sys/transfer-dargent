@@ -65,7 +65,17 @@ class CompteController
 
 
 }
-            
+if($iduser !== null)   {
+
+    if($this->algo->validMontant($montant)){
+        $data->setSolde($montant);
+        $data->setUser($userCreator);
+        $data->setNumero($date.$id);
+return $data;
+
+}
+
+}
         
       
     }
